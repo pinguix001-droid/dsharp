@@ -1,519 +1,520 @@
 <!doctype html>
 <html lang="tr" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pitch Hero</title>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=Exo+2:wght@300;400;600&amp;display=swap" rel="stylesheet">
-  <style>
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-  body {
-    font-family: 'Exo 2', sans-serif;
-    background: #0a0a1a;
-    color: #fff;
-  }
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pitch Hero</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=Exo+2:wght@300;400;600&amp;display=swap" rel="stylesheet">
+  <style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: #0a0a1a;
+    color: #fff;
+  }
 
-  #game-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-  }
+  #game-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
 
-  /* Animated background */
-  .bg-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,255,180,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,180,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    animation: gridMove 20s linear infinite;
-    pointer-events: none;
-  }
-  @keyframes gridMove {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 40px; }
-  }
+  /* Animated background */
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,180,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,180,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridMove 20s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 40px; }
+  }
 
-  /* Highway */
-  #highway {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: flex-start;
-    overflow: hidden;
-  }
+  /* Highway */
+  #highway {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    overflow: hidden;
+  }
 
-  .lane {
-    flex: 1;
-    height: 100%;
-    position: relative;
-    border-right: 1px solid rgba(255,255,255,0.06);
-  }
-  .lane:last-child { border-right: none; }
+  .lane {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .lane:last-child { border-right: none; }
 
-  /* Lane glow at bottom */
-  .lane-glow {
-    position: absolute;
-    bottom: 0;
-    left: 0; right: 0;
-    height: 80px;
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.1s;
-    pointer-events: none;
-  }
-  .lane.active .lane-glow { opacity: 1; }
+  /* Lane glow at bottom */
+  .lane-glow {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.1s;
+    pointer-events: none;
+  }
+  .lane.active .lane-glow { opacity: 1; }
 
-  /* Note blocks */
-  .note-block {
-    position: absolute;
-    left: 10%;
-    width: 80%;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    transition: box-shadow 0.05s;
-    border: 1px solid rgba(255,255,255,0.3);
-    cursor: default;
-    user-select: none;
-  }
+  /* Note blocks */
+  .note-block {
+    position: absolute;
+    left: 10%;
+    width: 80%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: box-shadow 0.05s;
+    border: 1px solid rgba(255,255,255,0.3);
+    cursor: default;
+    user-select: none;
+  }
 
-  /* Hit zone */
-  #hit-zone {
-    position: absolute;
-    bottom: 80px;
-    left: 0; right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, transparent, rgba(0,255,180,0.8), transparent);
-    box-shadow: 0 0 20px rgba(0,255,180,0.5);
-    z-index: 10;
-    pointer-events: none;
-  }
+  /* Hit zone */
+  #hit-zone {
+    position: absolute;
+    bottom: 80px;
+    left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, transparent, rgba(0,255,180,0.8), transparent);
+    box-shadow: 0 0 20px rgba(0,255,180,0.5);
+    z-index: 10;
+    pointer-events: none;
+  }
 
-  /* Hit buttons at bottom */
-  #hit-buttons {
-    display: flex;
-    gap: 0;
-    padding: 12px 0 12px;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    z-index: 20;
-    position: relative;
-  }
+  /* Hit buttons at bottom */
+  #hit-buttons {
+    display: flex;
+    gap: 0;
+    padding: 12px 0 12px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 20;
+    position: relative;
+  }
 
-  .hit-btn {
-    flex: 1;
-    height: 56px;
-    border-radius: 12px;
-    margin: 0 6px;
-    border: 2px solid rgba(255,255,255,0.2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Orbitron', monospace;
-    font-size: 13px;
-    font-weight: 700;
-    transition: all 0.08s;
-    position: relative;
-    overflow: hidden;
-    cursor: default;
-  }
+  .hit-btn {
+    flex: 1;
+    height: 56px;
+    border-radius: 12px;
+    margin: 0 6px;
+    border: 2px solid rgba(255,255,255,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.08s;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
 
-  .hit-btn .note-label { font-size: 9px; opacity: 0.7; margin-top: 2px; font-family: 'Exo 2', sans-serif; }
+  .hit-btn .note-label { font-size: 9px; opacity: 0.7; margin-top: 2px; font-family: 'Exo 2', sans-serif; }
 
-  .hit-btn.lit {
-    transform: scale(1.05);
-    border-color: rgba(255,255,255,0.8);
-    box-shadow: 0 0 20px var(--btn-color);
-  }
+  .hit-btn.lit {
+    transform: scale(1.05);
+    border-color: rgba(255,255,255,0.8);
+    box-shadow: 0 0 20px var(--btn-color);
+  }
 
-  /* HUD */
-  #hud {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    z-index: 20;
-    position: relative;
-    flex-shrink: 0;
-  }
+  /* HUD */
+  #hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    z-index: 20;
+    position: relative;
+    flex-shrink: 0;
+  }
 
-  #score-display {
-    font-family: 'Orbitron', monospace;
-    font-size: 22px;
-    font-weight: 900;
-    color: #00ffb4;
-    text-shadow: 0 0 15px rgba(0,255,180,0.8);
-  }
+  #score-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: #00ffb4;
+    text-shadow: 0 0 15px rgba(0,255,180,0.8);
+  }
 
-  #combo-display {
-    font-family: 'Orbitron', monospace;
-    font-size: 14px;
-    color: #ff6b35;
-    text-shadow: 0 0 10px rgba(255,107,53,0.8);
-  }
+  #combo-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    color: #ff6b35;
+    text-shadow: 0 0 10px rgba(255,107,53,0.8);
+  }
 
-  #song-info {
-    text-align: center;
-    flex: 1;
-    padding: 0 12px;
-  }
-  #song-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  #song-progress-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 2px;
-    margin-top: 4px;
-    overflow: hidden;
-  }
-  #song-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #00ffb4, #00bfff);
-    border-radius: 2px;
-    width: 0%;
-    transition: width 0.3s;
-  }
+  #song-info {
+    text-align: center;
+    flex: 1;
+    padding: 0 12px;
+  }
+  #song-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #song-progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  #song-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ffb4, #00bfff);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s;
+  }
 
-  #pitch-meter {
-    width: 100px;
-    text-align: right;
-  }
-  #pitch-value {
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    color: #aaa;
-  }
-  #detected-note {
-    font-family: 'Orbitron', monospace;
-    font-size: 18px;
-    font-weight: 700;
-    color: #fff;
-    min-height: 24px;
-  }
+  #pitch-meter {
+    width: 100px;
+    text-align: right;
+  }
+  #pitch-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    color: #aaa;
+  }
+  #detected-note {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    min-height: 24px;
+  }
 
-  /* Overlays */
-  .overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-    z-index: 100;
-  }
+  /* Overlays */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
 
-  .overlay h1 {
-    font-family: 'Orbitron', monospace;
-    font-size: 36px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #00ffb4, #00bfff, #ff6b35);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-align: center;
-    margin-bottom: 8px;
-  }
+  .overlay h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 36px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00ffb4, #00bfff, #ff6b35);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 8px;
+  }
 
-  .overlay p {
-    color: rgba(255,255,255,0.6);
-    font-size: 14px;
-    text-align: center;
-    max-width: 300px;
-    line-height: 1.6;
-  }
+  .overlay p {
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.6;
+  }
 
-  .btn-primary {
-    margin-top: 24px;
-    padding: 14px 36px;
-    background: linear-gradient(135deg, #00ffb4, #00bfff);
-    color: #0a0a1a;
-    border: none;
-    border-radius: 30px;
-    font-family: 'Orbitron', monospace;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 1px;
-  }
-  .btn-primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0,255,180,0.6);
-  }
+  .btn-primary {
+    margin-top: 24px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #00ffb4, #00bfff);
+    color: #0a0a1a;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0,255,180,0.6);
+  }
 
-  .btn-secondary {
-    margin-top: 12px;
-    padding: 10px 28px;
-    background: transparent;
-    color: rgba(255,255,255,0.6);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 30px;
-    font-family: 'Exo 2', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-secondary:hover {
-    border-color: rgba(255,255,255,0.5);
-    color: #fff;
-  }
+  .btn-secondary {
+    margin-top: 12px;
+    padding: 10px 28px;
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 30px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+  }
 
-  /* Song select */
-  .song-card {
-    width: 280px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.05);
-    cursor: pointer;
-    transition: all 0.2s;
-    margin: 6px 0;
-  }
-  .song-card:hover, .song-card.selected {
-    border-color: rgba(0,255,180,0.5);
-    background: rgba(0,255,180,0.08);
-    transform: translateX(4px);
-  }
-  .song-card .s-title { font-weight: 600; font-size: 15px; }
-  .song-card .s-info { font-size: 11px; opacity: 0.5; margin-top: 3px; }
-  .song-card .s-diff {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 600;
-    margin-top: 5px;
-  }
+  /* Song select */
+  .song-card {
+    width: 280px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 6px 0;
+  }
+  .song-card:hover, .song-card.selected {
+    border-color: rgba(0,255,180,0.5);
+    background: rgba(0,255,180,0.08);
+    transform: translateX(4px);
+  }
+  .song-card .s-title { font-weight: 600; font-size: 15px; }
+  .song-card .s-info { font-size: 11px; opacity: 0.5; margin-top: 3px; }
+  .song-card .s-diff {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 5px;
+  }
 
-  /* Hit feedback */
-  .hit-feedback {
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    transform: translateX(-50%);
-    font-family: 'Orbitron', monospace;
-    font-size: 28px;
-    font-weight: 900;
-    pointer-events: none;
-    z-index: 50;
-    animation: feedbackAnim 0.6s ease-out forwards;
-  }
-  @keyframes feedbackAnim {
-    0% { opacity: 1; transform: translateX(-50%) scale(1.2) translateY(0); }
-    100% { opacity: 0; transform: translateX(-50%) scale(0.8) translateY(-60px); }
-  }
+  /* Hit feedback */
+  .hit-feedback {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 50;
+    animation: feedbackAnim 0.6s ease-out forwards;
+  }
+  @keyframes feedbackAnim {
+    0% { opacity: 1; transform: translateX(-50%) scale(1.2) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) scale(0.8) translateY(-60px); }
+  }
 
-  /* Mic indicator */
-  #mic-indicator {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #ff4444;
-    display: inline-block;
-    margin-right: 6px;
-    transition: background 0.2s;
-  }
-  #mic-indicator.active { background: #00ff88; box-shadow: 0 0 8px #00ff88; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+  /* Mic indicator */
+  #mic-indicator {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #ff4444;
+    display: inline-block;
+    margin-right: 6px;
+    transition: background 0.2s;
+  }
+  #mic-indicator.active { background: #00ff88; box-shadow: 0 0 8px #00ff88; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 
-  /* Volume bar */
-  #vol-bar-bg {
-    width: 60px; height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-    overflow: hidden;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 4px;
-  }
-  #vol-bar { height: 100%; width: 0%; background: #00ffb4; border-radius: 2px; transition: width 0.05s; }
+  /* Volume bar */
+  #vol-bar-bg {
+    width: 60px; height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+  #vol-bar { height: 100%; width: 0%; background: #00ffb4; border-radius: 2px; transition: width 0.05s; }
 
-  /* Scroll songs */
-  #songs-list { max-height: 220px; overflow-y: auto; width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 8px; }
-  #songs-list::-webkit-scrollbar { width: 4px; }
-  #songs-list::-webkit-scrollbar-track { background: transparent; }
-  #songs-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  /* Scroll songs */
+  #songs-list { max-height: 220px; overflow-y: auto; width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 8px; }
+  #songs-list::-webkit-scrollbar { width: 4px; }
+  #songs-list::-webkit-scrollbar-track { background: transparent; }
+  #songs-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 
-  .stars { color: #ffd700; font-size: 13px; }
+  .stars { color: #ffd700; font-size: 13px; }
 
-  /* Streak fire */
-  #streak-fire {
-    font-size: 20px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    margin-left: 6px;
-  }
-  #streak-fire.show { opacity: 1; }
+  /* Streak fire */
+  #streak-fire {
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    margin-left: 6px;
+  }
+  #streak-fire.show { opacity: 1; }
 </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body>
-  <div id="game-wrapper">
-   <div class="bg-grid"></div><!-- START OVERLAY -->
-   <div class="overlay" id="start-overlay">
-    <h1 id="main-title">🎵 PITCH HERO</h1>
-    <p>Mikrofonunla şarkı söyle, notaları yakala!<br>
-      Gerçek zamanlı frekans tespiti ile Guitar Hero deneyimi.</p><button class="btn-primary" id="start-btn" onclick="showSongSelect()">BAŞLA</button>
-   </div><!-- SONG SELECT OVERLAY -->
-   <div class="overlay" id="song-select-overlay" style="display:none;">
-    <h1 style="font-size:24px; margin-bottom:4px;">🎼 ŞARKI SEÇ</h1>
-    <p style="margin-bottom:14px;">Bir şarkı seçin ve söylemeye hazır olun!</p>
-    <div id="songs-list"></div><button class="btn-primary" id="play-btn" onclick="startGame()" style="margin-top:16px;">OYNA ▶</button> <button class="btn-secondary" onclick="showOverlay('start-overlay')">← Geri</button>
-   </div><!-- RESULT OVERLAY -->
-   <div class="overlay" id="result-overlay" style="display:none;">
-    <div id="result-grade" style="font-size:64px; margin-bottom:8px;"></div>
-    <h1 id="result-title" style="font-size:26px;"></h1>
-    <p id="result-details"></p>
-    <div id="result-stars" class="stars" style="font-size:28px; margin-top:8px;"></div><button class="btn-primary" onclick="showSongSelect()" style="margin-top:20px;">TEKRAR OYNA</button> <button class="btn-secondary" onclick="showOverlay('start-overlay')">Ana Menü</button>
-   </div><!-- HUD -->
-   <div id="hud">
-    <div>
-     <div id="score-display">
-      0
-     </div>
-     <div id="combo-display">
-      COMBO x1 <span id="streak-fire">🔥</span>
-     </div>
-    </div>
-    <div id="song-info">
-     <div id="song-title">
-      —
-     </div>
-     <div id="song-progress-bar">
-      <div id="song-progress-fill"></div>
-     </div>
-    </div>
-    <div id="pitch-meter">
-     <div style="display:flex; align-items:center; justify-content:flex-end; font-size:11px; color:#aaa;"><span id="mic-indicator"></span>MIC 
-      <div id="vol-bar-bg">
-       <div id="vol-bar"></div>
-      </div>
-     </div>
-     <div id="detected-note" style="text-align:right;">
-      —
-     </div>
-    </div>
-   </div><!-- HIGHWAY -->
-   <div id="highway">
-    <div class="lane" id="lane-0">
-     <div class="lane-glow" style="background:radial-gradient(ellipse, #ff6b35 0%, transparent 70%);"></div>
-    </div>
-    <div class="lane" id="lane-1">
-     <div class="lane-glow" style="background:radial-gradient(ellipse, #ff3b8e 0%, transparent 70%);"></div>
-    </div>
-    <div class="lane" id="lane-2">
-     <div class="lane-glow" style="background:radial-gradient(ellipse, #00ffb4 0%, transparent 70%);"></div>
-    </div>
-    <div class="lane" id="lane-3">
-     <div class="lane-glow" style="background:radial-gradient(ellipse, #00bfff 0%, transparent 70%);"></div>
-    </div>
-    <div class="lane" id="lane-4">
-     <div class="lane-glow" style="background:radial-gradient(ellipse, #a855f7 0%, transparent 70%);"></div>
-    </div>
-    <div id="hit-zone"></div>
-   </div><!-- HIT BUTTONS -->
-   <div id="hit-buttons"></div>
-  </div>
-  <script>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="game-wrapper">
+   <div class="bg-grid"></div><!-- START OVERLAY -->
+   <div class="overlay" id="start-overlay">
+    <h1 id="main-title">🎵 PITCH HERO</h1>
+    <p>Mikrofonunla şarkı söyle, notaları yakala!<br>
+      Gerçek zamanlı frekans tespiti ile Guitar Hero deneyimi.</p><button class="btn-primary" id="start-btn" onclick="showSongSelect()">BAŞLA</button>
+   </div><!-- SONG SELECT OVERLAY -->
+   <div class="overlay" id="song-select-overlay" style="display:none;">
+    <h1 style="font-size:24px; margin-bottom:4px;">🎼 ŞARKI SEÇ</h1>
+    <p style="margin-bottom:14px;">Bir şarkı seçin ve söylemeye hazır olun!</p>
+    <div id="songs-list"></div><button class="btn-primary" id="play-btn" onclick="startGame()" style="margin-top:16px;">OYNA ▶</button> <button class="btn-secondary" onclick="showOverlay('start-overlay')">← Geri</button>
+   </div><!-- RESULT OVERLAY -->
+   <div class="overlay" id="result-overlay" style="display:none;">
+    <div id="result-grade" style="font-size:64px; margin-bottom:8px;"></div>
+    <h1 id="result-title" style="font-size:26px;"></h1>
+    <p id="result-details"></p>
+    <div id="result-stars" class="stars" style="font-size:28px; margin-top:8px;"></div><button class="btn-primary" onclick="showSongSelect()" style="margin-top:20px;">TEKRAR OYNA</button> <button class="btn-secondary" onclick="showOverlay('start-overlay')">Ana Menü</button>
+   </div><!-- HUD -->
+   <div id="hud">
+    <div>
+     <div id="score-display">
+      0
+     </div>
+     <div id="combo-display">
+      COMBO x1 <span id="streak-fire">🔥</span>
+     </div>
+    </div>
+    <div id="song-info">
+     <div id="song-title">
+      —
+     </div>
+     <div id="song-progress-bar">
+      <div id="song-progress-fill"></div>
+     </div>
+    </div>
+    <div id="pitch-meter">
+     <div style="display:flex; align-items:center; justify-content:flex-end; font-size:11px; color:#aaa;">
+      <span id="mic-indicator"></span>MIC 
+      <div id="vol-bar-bg">
+       <div id="vol-bar"></div>
+      </div>
+     </div>
+     <div id="detected-note" style="text-align:right;">
+      —
+     </div>
+    </div>
+   </div><!-- HIGHWAY -->
+   <div id="highway">
+    <div class="lane" id="lane-0">
+     <div class="lane-glow" style="background:radial-gradient(ellipse, #ff6b35 0%, transparent 70%);"></div>
+    </div>
+    <div class="lane" id="lane-1">
+     <div class="lane-glow" style="background:radial-gradient(ellipse, #ff3b8e 0%, transparent 70%);"></div>
+    </div>
+    <div class="lane" id="lane-2">
+     <div class="lane-glow" style="background:radial-gradient(ellipse, #00ffb4 0%, transparent 70%);"></div>
+    </div>
+    <div class="lane" id="lane-3">
+     <div class="lane-glow" style="background:radial-gradient(ellipse, #00bfff 0%, transparent 70%);"></div>
+    </div>
+    <div class="lane" id="lane-4">
+     <div class="lane-glow" style="background:radial-gradient(ellipse, #a855f7 0%, transparent 70%);"></div>
+    </div>
+    <div id="hit-zone"></div>
+   </div><!-- HIT BUTTONS -->
+   <div id="hit-buttons"></div>
+  </div>
+  <script>
 // ── SONGS DATABASE ────────────────────────────────────────────────────────────
 // Each note: { note: "C4", duration: ms, lane: 0-4 }
 // Notes mapped to lanes: C=0, D=1, E=2, G=3, A=4 (pentatonic)
 const SONGS = [
-  {
-    id: 1,
-    title: "Twinkle Twinkle",
-    artist: "Klasik",
-    difficulty: "Kolay",
-    diffColor: "#00ffb4",
-    bpm: 100,
-    notes: [
-      {note:"C4",dur:500,lane:0},{note:"C4",dur:500,lane:0},{note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},
-      {note:"A4",dur:500,lane:4},{note:"A4",dur:500,lane:4},{note:"G4",dur:900,lane:3},
-      {note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},{note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},
-      {note:"D4",dur:500,lane:1},{note:"D4",dur:500,lane:1},{note:"C4",dur:900,lane:0},
-      {note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},{note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},
-      {note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},{note:"D4",dur:900,lane:1},
-      {note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},{note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},
-      {note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},{note:"D4",dur:900,lane:1},
-      {note:"C4",dur:500,lane:0},{note:"C4",dur:500,lane:0},{note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},
-      {note:"A4",dur:500,lane:4},{note:"A4",dur:500,lane:4},{note:"G4",dur:900,lane:3},
-      {note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},{note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},
-      {note:"D4",dur:500,lane:1},{note:"D4",dur:500,lane:1},{note:"C4",dur:900,lane:0},
-    ]
-  },
-  {
-    id: 2,
-    title: "Happy Birthday",
-    artist: "Geleneksel",
-    difficulty: "Orta",
-    diffColor: "#ffaa00",
-    bpm: 120,
-    notes: [
-      {note:"C4",dur:350,lane:0},{note:"C4",dur:200,lane:0},{note:"D4",dur:500,lane:1},{note:"C4",dur:500,lane:0},
-      {note:"F4",dur:500,lane:2},{note:"E4",dur:900,lane:1},
-      {note:"C4",dur:350,lane:0},{note:"C4",dur:200,lane:0},{note:"D4",dur:500,lane:1},{note:"C4",dur:500,lane:0},
-      {note:"G4",dur:500,lane:3},{note:"F4",dur:900,lane:2},
-      {note:"C4",dur:350,lane:0},{note:"C4",dur:200,lane:0},{note:"C5",dur:500,lane:0},{note:"A4",dur:500,lane:4},
-      {note:"F4",dur:500,lane:2},{note:"E4",dur:500,lane:1},{note:"D4",dur:900,lane:1},
-      {note:"A4",dur:350,lane:4},{note:"A4",dur:200,lane:4},{note:"A4",dur:500,lane:4},{note:"G4",dur:500,lane:3},
-      {note:"F4",dur:500,lane:2},{note:"G4",dur:500,lane:3},{note:"F4",dur:900,lane:2},
-    ]
-  },
-  {
-    id: 3,
-    title: "Ode to Joy",
-    artist: "Beethoven",
-    difficulty: "Zor",
-    diffColor: "#ff6b35",
-    bpm: 130,
-    notes: [
-      {note:"E4",dur:400,lane:1},{note:"E4",dur:400,lane:1},{note:"F4",dur:400,lane:2},{note:"G4",dur:400,lane:3},
-      {note:"G4",dur:400,lane:3},{note:"F4",dur:400,lane:2},{note:"E4",dur:400,lane:1},{note:"D4",dur:400,lane:1},
-      {note:"C4",dur:400,lane:0},{note:"C4",dur:400,lane:0},{note:"D4",dur:400,lane:1},{note:"E4",dur:400,lane:1},
-      {note:"E4",dur:600,lane:1},{note:"D4",dur:200,lane:1},{note:"D4",dur:800,lane:1},
-      {note:"E4",dur:400,lane:1},{note:"E4",dur:400,lane:1},{note:"F4",dur:400,lane:2},{note:"G4",dur:400,lane:3},
-      {note:"G4",dur:400,lane:3},{note:"F4",dur:400,lane:2},{note:"E4",dur:400,lane:1},{note:"D4",dur:400,lane:1},
-      {note:"C4",dur:400,lane:0},{note:"C4",dur:400,lane:0},{note:"D4",dur:400,lane:1},{note:"E4",dur:400,lane:1},
-      {note:"D4",dur:600,lane:1},{note:"C4",dur:200,lane:0},{note:"C4",dur:800,lane:0},
-      {note:"D4",dur:400,lane:1},{note:"D4",dur:400,lane:1},{note:"E4",dur:400,lane:1},{note:"C4",dur:400,lane:0},
-      {note:"D4",dur:400,lane:1},{note:"E4",dur:200,lane:1},{note:"F4",dur:200,lane:2},{note:"E4",dur:400,lane:1},{note:"C4",dur:400,lane:0},
-      {note:"D4",dur:400,lane:1},{note:"E4",dur:200,lane:1},{note:"F4",dur:200,lane:2},{note:"E4",dur:400,lane:1},{note:"D4",dur:400,lane:1},
-      {note:"C4",dur:400,lane:0},{note:"D4",dur:400,lane:1},{note:"G3",dur:800,lane:3},
-    ]
-  }
+  {
+    id: 1,
+    title: "Twinkle Twinkle",
+    artist: "Klasik",
+    difficulty: "Kolay",
+    diffColor: "#00ffb4",
+    bpm: 100,
+    notes: [
+      {note:"C4",dur:500,lane:0},{note:"C4",dur:500,lane:0},{note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},
+      {note:"A4",dur:500,lane:4},{note:"A4",dur:500,lane:4},{note:"G4",dur:900,lane:3},
+      {note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},{note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},
+      {note:"D4",dur:500,lane:1},{note:"D4",dur:500,lane:1},{note:"C4",dur:900,lane:0},
+      {note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},{note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},
+      {note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},{note:"D4",dur:900,lane:1},
+      {note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},{note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},
+      {note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},{note:"D4",dur:900,lane:1},
+      {note:"C4",dur:500,lane:0},{note:"C4",dur:500,lane:0},{note:"G4",dur:500,lane:3},{note:"G4",dur:500,lane:3},
+      {note:"A4",dur:500,lane:4},{note:"A4",dur:500,lane:4},{note:"G4",dur:900,lane:3},
+      {note:"F4",dur:500,lane:2},{note:"F4",dur:500,lane:2},{note:"E4",dur:500,lane:1},{note:"E4",dur:500,lane:1},
+      {note:"D4",dur:500,lane:1},{note:"D4",dur:500,lane:1},{note:"C4",dur:900,lane:0},
+    ]
+  },
+  {
+    id: 2,
+    title: "Happy Birthday",
+    artist: "Geleneksel",
+    difficulty: "Orta",
+    diffColor: "#ffaa00",
+    bpm: 120,
+    notes: [
+      {note:"C4",dur:350,lane:0},{note:"C4",dur:200,lane:0},{note:"D4",dur:500,lane:1},{note:"C4",dur:500,lane:0},
+      {note:"F4",dur:500,lane:2},{note:"E4",dur:900,lane:1},
+      {note:"C4",dur:350,lane:0},{note:"C4",dur:200,lane:0},{note:"D4",dur:500,lane:1},{note:"C4",dur:500,lane:0},
+      {note:"G4",dur:500,lane:3},{note:"F4",dur:900,lane:2},
+      {note:"C4",dur:350,lane:0},{note:"C4",dur:200,lane:0},{note:"C5",dur:500,lane:0},{note:"A4",dur:500,lane:4},
+      {note:"F4",dur:500,lane:2},{note:"E4",dur:500,lane:1},{note:"D4",dur:900,lane:1},
+      {note:"A4",dur:350,lane:4},{note:"A4",dur:200,lane:4},{note:"A4",dur:500,lane:4},{note:"G4",dur:500,lane:3},
+      {note:"F4",dur:500,lane:2},{note:"G4",dur:500,lane:3},{note:"F4",dur:900,lane:2},
+    ]
+  },
+  {
+    id: 3,
+    title: "Ode to Joy",
+    artist: "Beethoven",
+    difficulty: "Zor",
+    diffColor: "#ff6b35",
+    bpm: 130,
+    notes: [
+      {note:"E4",dur:400,lane:1},{note:"E4",dur:400,lane:1},{note:"F4",dur:400,lane:2},{note:"G4",dur:400,lane:3},
+      {note:"G4",dur:400,lane:3},{note:"F4",dur:400,lane:2},{note:"E4",dur:400,lane:1},{note:"D4",dur:400,lane:1},
+      {note:"C4",dur:400,lane:0},{note:"C4",dur:400,lane:0},{note:"D4",dur:400,lane:1},{note:"E4",dur:400,lane:1},
+      {note:"E4",dur:600,lane:1},{note:"D4",dur:200,lane:1},{note:"D4",dur:800,lane:1},
+      {note:"E4",dur:400,lane:1},{note:"E4",dur:400,lane:1},{note:"F4",dur:400,lane:2},{note:"G4",dur:400,lane:3},
+      {note:"G4",dur:400,lane:3},{note:"F4",dur:400,lane:2},{note:"E4",dur:400,lane:1},{note:"D4",dur:400,lane:1},
+      {note:"C4",dur:400,lane:0},{note:"C4",dur:400,lane:0},{note:"D4",dur:400,lane:1},{note:"E4",dur:400,lane:1},
+      {note:"D4",dur:600,lane:1},{note:"C4",dur:200,lane:0},{note:"C4",dur:800,lane:0},
+      {note:"D4",dur:400,lane:1},{note:"D4",dur:400,lane:1},{note:"E4",dur:400,lane:1},{note:"C4",dur:400,lane:0},
+      {note:"D4",dur:400,lane:1},{note:"E4",dur:200,lane:1},{note:"F4",dur:200,lane:2},{note:"E4",dur:400,lane:1},{note:"C4",dur:400,lane:0},
+      {note:"D4",dur:400,lane:1},{note:"E4",dur:200,lane:1},{note:"F4",dur:200,lane:2},{note:"E4",dur:400,lane:1},{note:"D4",dur:400,lane:1},
+      {note:"C4",dur:400,lane:0},{note:"D4",dur:400,lane:1},{note:"G3",dur:800,lane:3},
+    ]
+  }
 ];
 
 // Note frequencies (Hz)
 const NOTE_FREQS = {
-  "C3":130.81,"D3":146.83,"E3":164.81,"F3":174.61,"G3":196.00,"A3":220.00,"B3":246.94,
-  "C4":261.63,"D4":293.66,"E4":329.63,"F4":349.23,"G4":392.00,"A4":440.00,"B4":493.88,
-  "C5":523.25,"D5":587.33,"E5":659.25,"F5":698.46,"G5":783.99,"A5":880.00,"B5":987.77
+  "C3":130.81,"D3":146.83,"E3":164.81,"F3":174.61,"G3":196.00,"A3":220.00,"B3":246.94,
+  "C4":261.63,"D4":293.66,"E4":329.63,"F4":349.23,"G4":392.00,"A4":440.00,"B4":493.88,
+  "C5":523.25,"D5":587.33,"E5":659.25,"F5":698.46,"G5":783.99,"A5":880.00,"B5":987.77
 };
 
 const LANE_COLORS = ["#ff6b35","#ff3b8e","#00ffb4","#00bfff","#a855f7"];
@@ -547,421 +548,452 @@ let animStart = null;
 const defaultConfig = { game_title: "PITCH HERO" };
 
 window.elementSdk.init({
-  defaultConfig,
-  onConfigChange: async (config) => {
-    document.getElementById('main-title').textContent = '🎵 ' + (config.game_title || defaultConfig.game_title);
-    document.title = config.game_title || defaultConfig.game_title;
-  },
-  mapToCapabilities: (config) => ({
-    recolorables: [],
-    borderables: [],
-    fontEditable: undefined,
-    fontSizeable: undefined
-  }),
-  mapToEditPanelValues: (config) => new Map([
-    ["game_title", config.game_title || defaultConfig.game_title]
-  ])
+  defaultConfig,
+  onConfigChange: async (config) => {
+    document.getElementById('main-title').textContent = '🎵 ' + (config.game_title || defaultConfig.game_title);
+    document.title = config.game_title || defaultConfig.game_title;
+  },
+  mapToCapabilities: (config) => ({
+    recolorables: [],
+    borderables: [],
+    fontEditable: undefined,
+    fontSizeable: undefined
+  }),
+  mapToEditPanelValues: (config) => new Map([
+    ["game_title", config.game_title || defaultConfig.game_title]
+  ])
 });
 
 // ── BUILD UI ─────────────────────────────────────────────────────────────────
 function buildHitButtons() {
-  const container = document.getElementById('hit-buttons');
-  container.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
-    const btn = document.createElement('div');
-    btn.className = 'hit-btn';
-    btn.id = `hit-btn-${i}`;
-    btn.style.setProperty('--btn-color', LANE_COLORS[i]);
-    btn.style.background = LANE_COLORS[i] + '22';
-    btn.style.borderColor = LANE_COLORS[i] + '55';
-    btn.style.color = LANE_COLORS[i];
-    btn.innerHTML = `<span>${LANE_NOTES[i]}</span><span class="note-label">Lane ${i+1}</span>`;
-    container.appendChild(btn);
-  }
+  const container = document.getElementById('hit-buttons');
+  container.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const btn = document.createElement('div');
+    btn.className = 'hit-btn';
+    btn.id = `hit-btn-${i}`;
+    btn.style.setProperty('--btn-color', LANE_COLORS[i]);
+    btn.style.background = LANE_COLORS[i] + '22';
+    btn.style.borderColor = LANE_COLORS[i] + '55';
+    btn.style.color = LANE_COLORS[i];
+    btn.innerHTML = `<span>${LANE_NOTES[i]}</span><span class="note-label">Lane ${i+1}</span>`;
+    container.appendChild(btn);
+  }
 }
 
 function buildSongList() {
-  const list = document.getElementById('songs-list');
-  list.innerHTML = '';
-  SONGS.forEach((song, idx) => {
-    const card = document.createElement('div');
-    card.className = 'song-card' + (selectedSong === song ? ' selected' : '');
-    card.innerHTML = `
-      <div class="s-title">${song.title}</div>
-      <div class="s-info">${song.artist} • ${song.notes.length} nota • BPM ${song.bpm}</div>
-      <span class="s-diff" style="background:${song.diffColor}22; color:${song.diffColor}; border:1px solid ${song.diffColor}55;">${song.difficulty}</span>
-    `;
-    card.onclick = () => {
-      selectedSong = song;
-      document.querySelectorAll('.song-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-    };
-    list.appendChild(card);
-  });
-  if (!selectedSong) { selectedSong = SONGS[0]; list.children[0].classList.add('selected'); }
+  const list = document.getElementById('songs-list');
+  list.innerHTML = '';
+  SONGS.forEach((song, idx) => {
+    const card = document.createElement('div');
+    card.className = 'song-card' + (selectedSong === song ? ' selected' : '');
+    card.innerHTML = `
+      <div class="s-title">${song.title}</div>
+      <div class="s-info">${song.artist} • ${song.notes.length} nota • BPM ${song.bpm}</div>
+      <span class="s-diff" style="background:${song.diffColor}22; color:${song.diffColor}; border:1px solid ${song.diffColor}55;">${song.difficulty}</span>
+    `;
+    card.onclick = () => {
+      selectedSong = song;
+      document.querySelectorAll('.song-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    };
+    list.appendChild(card);
+  });
+  if (!selectedSong) { selectedSong = SONGS[0]; list.children[0].classList.add('selected'); }
 }
 
 // ── OVERLAYS ─────────────────────────────────────────────────────────────────
 function showOverlay(id) {
-  ['start-overlay','song-select-overlay','result-overlay'].forEach(o => {
-    document.getElementById(o).style.display = (o === id ? 'flex' : 'none');
-  });
+  ['start-overlay','song-select-overlay','result-overlay'].forEach(o => {
+    document.getElementById(o).style.display = (o === id ? 'flex' : 'none');
+  });
 }
 
 async function showSongSelect() {
-  buildSongList();
-  showOverlay('song-select-overlay');
+  buildSongList();
+  showOverlay('song-select-overlay');
 }
 
 // ── AUDIO / PITCH ─────────────────────────────────────────────────────────────
 async function initMic() {
-  try {
-    if (!navigator.mediaDevices) {
-      showError('❌ Tarayıcınız mikrofon desteklemiyor.');
-      return false;
-    }
-    
-    console.log('Mikrofon izni isteniyor...');
-    const stream = await navigator.mediaDevices.getUserMedia({ 
-      audio: { 
-        echoCancellation: false, 
-        noiseSuppression: false, 
-        autoGainControl: false 
-      } 
-    });
-    
-    console.log('Mikrofon izni verildi!', stream);
-    if (!stream || stream.getTracks().length === 0) {
-      showError('❌ Mikrofon akışı başlatılamadı.');
-      return false;
-    }
-    
-    micStream = stream;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 4096;
-    analyser.smoothingTimeConstant = 0.85;
-    const src = audioCtx.createMediaStreamSource(stream);
-    src.connect(analyser);
-    document.getElementById('mic-indicator').classList.add('active');
-    startPitchDetection();
-    console.log('Pitch detection başladı');
-    return true;
-  } catch(e) {
-    console.error('Mikrofon hatası:', e.name, e.message);
-    let errorMsg = '❌ Mikrofon erişimi reddedildi.';
-    if (e.name === 'NotAllowedError') {
-      errorMsg = '❌ Mikrofon izni verilmedi!\n\nTarayıcı menüsünden:\n1. Adres çubuğunun solunda kamera/mikrofon simgesini klik et\n2. "Mikrofon" → "İzin Ver" seç\n3. Sonra "OYNA" tuşuna tekrar bas';
-    }
-    if (e.name === 'NotFoundError') errorMsg = '❌ Bilgisayarına mikrofon takılı değil.';
-    if (e.name === 'NotReadableError') errorMsg = '❌ Mikrofon başka program tarafından kullanılıyor.\n\nZoom, Teams veya başka uygulamayı kapat.';
-    showError(errorMsg);
-    return false;
-  }
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showError('❌ Tarayıcınız mikrofon desteklemiyor. Lütfen Chrome, Firefox veya Edge kullanın.');
+      return false;
+    }
+    
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      audio: { 
+        echoCancellation: false, 
+        noiseSuppression: false, 
+        autoGainControl: false 
+      } 
+    });
+    
+    if (!stream || stream.getTracks().length === 0) {
+      showError('❌ Mikrofon akışı başlatılamadı. Lütfen tekrar deneyin.');
+      return false;
+    }
+    
+    micStream = stream;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 4096;
+    analyser.smoothingTimeConstant = 0.85;
+    const src = audioCtx.createMediaStreamSource(stream);
+    src.connect(analyser);
+    document.getElementById('mic-indicator').classList.add('active');
+    startPitchDetection();
+    return true;
+  } catch(e) {
+    let errorMsg = '❌ Mikrofon erişimi reddedildi.';
+    
+    if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+      errorMsg = `❌ MİKROFON İZNİ VERİLMEDİ
+      
+👉 ÇÖZÜM:
+1️⃣  Adres çubuğunun SOLunda 🔒 simgesine tıkla
+2️⃣  "Mikrofon" → "İzin Ver" seç
+3️⃣  "OYNA" tuşuna yeniden bas`;
+    } else if (e.name === 'NotFoundError') {
+      errorMsg = '❌ Bilgisayarında mikrofon takılı değil.';
+    } else if (e.name === 'NotReadableError') {
+      errorMsg = `❌ Mikrofon başka program tarafından kullanılıyor
+      
+✓ Zoom, Teams veya başka uygulamayı kapat
+✓ Sonra "OYNA" tuşuna tekrar bas`;
+    } else if (e.name === 'SecurityError') {
+      errorMsg = `❌ Güvenlik hatası - HTTPS gerekli
+      
+Bu site HTTPS üzerinden çalışmıyor. 
+Lütfen yöneticiye başvur.`;
+    }
+    
+    showError(errorMsg);
+    return false;
+  }
 }
 
 function startPitchDetection() {
-  const bufLen = analyser.fftSize;
-  const buf = new Float32Array(bufLen);
-  function loop() {
-    analyser.getFloatTimeDomainData(buf);
-    // RMS for volume
-    let rms = 0;
-    for (let i = 0; i < bufLen; i++) rms += buf[i] * buf[i];
-    rms = Math.sqrt(rms / bufLen);
-    volLevel = Math.min(1, rms * 8);
-    document.getElementById('vol-bar').style.width = (volLevel * 100) + '%';
+  const bufLen = analyser.fftSize;
+  const buf = new Float32Array(bufLen);
+  function loop() {
+    analyser.getFloatTimeDomainData(buf);
+    // RMS for volume
+    let rms = 0;
+    for (let i = 0; i < bufLen; i++) rms += buf[i] * buf[i];
+    rms = Math.sqrt(rms / bufLen);
+    volLevel = Math.min(1, rms * 8);
+    document.getElementById('vol-bar').style.width = (volLevel * 100) + '%';
 
-    if (rms > 0.01) {
-      const freq = autoCorrelate(buf, audioCtx.sampleRate);
-      if (freq > 60 && freq < 1200) {
-        detectedFreq = freq;
-        const note = freqToNote(freq);
-        detectedNote = note;
-        document.getElementById('detected-note').textContent = note;
-        document.getElementById('pitch-value').textContent = Math.round(freq) + ' Hz';
-        if (gameState === 'playing') checkHit(note, freq);
-      } else {
-        detectedNote = null;
-        detectedFreq = 0;
-        document.getElementById('detected-note').textContent = '—';
-        document.getElementById('pitch-value').textContent = '— Hz';
-      }
-    } else {
-      detectedNote = null;
-      document.getElementById('detected-note').textContent = '—';
-      document.getElementById('vol-bar').style.width = '0%';
-    }
-    pitchDetectionLoop = requestAnimationFrame(loop);
-  }
-  loop();
+    if (rms > 0.01) {
+      const freq = autoCorrelate(buf, audioCtx.sampleRate);
+      if (freq > 60 && freq < 1200) {
+        detectedFreq = freq;
+        const note = freqToNote(freq);
+        detectedNote = note;
+        document.getElementById('detected-note').textContent = note;
+        document.getElementById('pitch-value').textContent = Math.round(freq) + ' Hz';
+        if (gameState === 'playing') checkHit(note, freq);
+      } else {
+        detectedNote = null;
+        detectedFreq = 0;
+        document.getElementById('detected-note').textContent = '—';
+        document.getElementById('pitch-value').textContent = '— Hz';
+      }
+    } else {
+      detectedNote = null;
+      document.getElementById('detected-note').textContent = '—';
+      document.getElementById('vol-bar').style.width = '0%';
+    }
+    pitchDetectionLoop = requestAnimationFrame(loop);
+  }
+  loop();
 }
 
 // YIN-like autocorrelation
 function autoCorrelate(buf, sampleRate) {
-  const SIZE = buf.length;
-  const rms = Math.sqrt(buf.reduce((s,v)=>s+v*v,0)/SIZE);
-  if (rms < 0.008) return -1;
-  let r1=0, r2=SIZE-1;
-  for (let i=0;i<SIZE/2;i++) if(Math.abs(buf[i])<0.2){r1=i;break;}
-  for (let i=1;i<SIZE/2;i++) if(Math.abs(buf[SIZE-i])<0.2){r2=SIZE-i;break;}
-  const buf2 = buf.slice(r1,r2);
-  const c = new Array(buf2.length).fill(0);
-  for (let i=0;i<buf2.length;i++) for (let j=0;j<buf2.length-i;j++) c[i]+=buf2[j]*buf2[j+i];
-  let d=0;
-  while (c[d]>c[d+1]) d++;
-  let maxVal=-1, maxPos=-1;
-  for (let i=d;i<buf2.length;i++) if(c[i]>maxVal){maxVal=c[i];maxPos=i;}
-  let T0=maxPos;
-  const x1=c[T0-1],x2=c[T0],x3=c[T0+1];
-  const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
-  if (a) T0 -= b/(2*a);
-  return sampleRate/T0;
+  const SIZE = buf.length;
+  const rms = Math.sqrt(buf.reduce((s,v)=>s+v*v,0)/SIZE);
+  if (rms < 0.008) return -1;
+  let r1=0, r2=SIZE-1;
+  for (let i=0;i<SIZE/2;i++) if(Math.abs(buf[i])<0.2){r1=i;break;}
+  for (let i=1;i<SIZE/2;i++) if(Math.abs(buf[SIZE-i])<0.2){r2=SIZE-i;break;}
+  const buf2 = buf.slice(r1,r2);
+  const c = new Array(buf2.length).fill(0);
+  for (let i=0;i<buf2.length;i++) for (let j=0;j<buf2.length-i;j++) c[i]+=buf2[j]*buf2[j+i];
+  let d=0;
+  while (c[d]>c[d+1]) d++;
+  let maxVal=-1, maxPos=-1;
+  for (let i=d;i<buf2.length;i++) if(c[i]>maxVal){maxVal=c[i];maxPos=i;}
+  let T0=maxPos;
+  const x1=c[T0-1],x2=c[T0],x3=c[T0+1];
+  const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
+  if (a) T0 -= b/(2*a);
+  return sampleRate/T0;
 }
 
 function freqToNote(freq) {
-  const notes = Object.entries(NOTE_FREQS);
-  let best = null, bestDiff = Infinity;
-  for (const [name, f] of notes) {
-    const diff = Math.abs(Math.log2(freq/f));
-    if (diff < bestDiff) { bestDiff = diff; best = name; }
-  }
-  return best;
+  const notes = Object.entries(NOTE_FREQS);
+  let best = null, bestDiff = Infinity;
+  for (const [name, f] of notes) {
+    const diff = Math.abs(Math.log2(freq/f));
+    if (diff < bestDiff) { bestDiff = diff; best = name; }
+  }
+  return best;
 }
 
 function noteToLane(noteName) {
-  if (!noteName) return -1;
-  const letter = noteName.replace(/[0-9]/g,'');
-  if (letter === 'C') return 0;
-  if (letter === 'D') return 1;
-  if (letter === 'E') return 2;
-  if (letter === 'F' || letter === 'G') return 3;
-  if (letter === 'A' || letter === 'B') return 4;
-  return -1;
+  if (!noteName) return -1;
+  const letter = noteName.replace(/[0-9]/g,'');
+  if (letter === 'C') return 0;
+  if (letter === 'D') return 1;
+  if (letter === 'E') return 2;
+  if (letter === 'F' || letter === 'G') return 3;
+  if (letter === 'A' || letter === 'B') return 4;
+  return -1;
 }
 
 // ── GAME LOGIC ────────────────────────────────────────────────────────────────
 async function startGame() {
-  if (!selectedSong) return;
+  if (!selectedSong) return;
 
-  // Init mic first - BEFORE hiding overlays
-  if (!audioCtx) {
-    const ok = await initMic();
-    if (!ok) {
-      showError('Mikrofon erişimi reddedildi. Lütfen izin verin ve tekrar deneyin.');
-      return;
-    }
-  }
+  // Init mic first - BEFORE hiding overlays
+  if (!audioCtx) {
+    const ok = await initMic();
+    if (!ok) {
+      showError('Mikrofon erişimi reddedildi. Lütfen izin verin ve tekrar deneyin.');
+      return;
+    }
+  }
 
-  // NOW hide overlays and start
-  showOverlay(null);
-  ['start-overlay','song-select-overlay','result-overlay'].forEach(o => {
-    document.getElementById(o).style.display = 'none';
-  });
+  // NOW hide overlays and start
+  showOverlay(null);
+  ['start-overlay','song-select-overlay','result-overlay'].forEach(o => {
+    document.getElementById(o).style.display = 'none';
+  });
 
-  // Reset state
-  score = 0; combo = 1; maxCombo = 1; hits = 0; misses = 0;
-  currentNoteIndex = 0;
-  noteObjects = [];
-  hitCooldown = {};
-  gameState = 'playing';
-  totalNotes = selectedSong.notes.length;
+  // Reset state
+  score = 0; combo = 1; maxCombo = 1; hits = 0; misses = 0;
+  currentNoteIndex = 0;
+  noteObjects = [];
+  hitCooldown = {};
+  gameState = 'playing';
+  totalNotes = selectedSong.notes.length;
 
-  document.getElementById('score-display').textContent = '0';
-  document.getElementById('combo-display').innerHTML = 'COMBO x1 <span id="streak-fire">🔥</span>';
-  document.getElementById('song-title').textContent = selectedSong.title + ' — ' + selectedSong.artist;
-  document.getElementById('song-progress-fill').style.width = '0%';
+  document.getElementById('score-display').textContent = '0';
+  document.getElementById('combo-display').innerHTML = 'COMBO x1 <span id="streak-fire">🔥</span>';
+  document.getElementById('song-title').textContent = selectedSong.title + ' — ' + selectedSong.artist;
+  document.getElementById('song-progress-fill').style.width = '0%';
 
-  // Schedule notes
-  songNotes = selectedSong.notes.map((n, idx) => {
-    // Calculate time offset: each note comes after previous note's duration
-    let t = 0;
-    for (let i = 0; i < idx; i++) t += selectedSong.notes[i].dur + 80;
-    return { ...n, time: t, id: idx, hit: false, missed: false };
-  });
+  // Schedule notes
+  songNotes = selectedSong.notes.map((n, idx) => {
+    // Calculate time offset: each note comes after previous note's duration
+    let t = 0;
+    for (let i = 0; i < idx; i++) t += selectedSong.notes[i].dur + 80;
+    return { ...n, time: t, id: idx, hit: false, missed: false };
+  });
 
-  highwayHeight = document.getElementById('highway').offsetHeight;
-  songStartTime = performance.now();
-  animStart = performance.now();
+  highwayHeight = document.getElementById('highway').offsetHeight;
+  songStartTime = performance.now();
+  animStart = performance.now();
 
-  // Clear old notes
-  document.querySelectorAll('.note-block').forEach(n => n.remove());
+  // Clear old notes
+  document.querySelectorAll('.note-block').forEach(n => n.remove());
 
-  requestAnimationFrame(gameFrame);
+  requestAnimationFrame(gameFrame);
 }
 
 function gameFrame(timestamp) {
-  if (gameState !== 'playing') return;
+  if (gameState !== 'playing') return;
 
-  const elapsed = timestamp - songStartTime;
-  highwayHeight = document.getElementById('highway').offsetHeight;
+  const elapsed = timestamp - songStartTime;
+  highwayHeight = document.getElementById('highway').offsetHeight;
 
-  // Spawn new notes
-  while (currentNoteIndex < songNotes.length) {
-    const sn = songNotes[currentNoteIndex];
-    // Spawn note early enough so it travels to hit zone
-    const travelTime = (highwayHeight - HIT_ZONE_BOTTOM) / NOTE_SPEED * 1000;
-    if (elapsed >= sn.time - travelTime) {
-      spawnNote(sn);
-      currentNoteIndex++;
-    } else {
-      break;
-    }
-  }
+  // Spawn new notes
+  while (currentNoteIndex < songNotes.length) {
+    const sn = songNotes[currentNoteIndex];
+    // Spawn note early enough so it travels to hit zone
+    const travelTime = (highwayHeight - HIT_ZONE_BOTTOM) / NOTE_SPEED * 1000;
+    if (elapsed >= sn.time - travelTime) {
+      spawnNote(sn);
+      currentNoteIndex++;
+    } else {
+      break;
+    }
+  }
 
-  // Move existing notes
-  const noteEls = document.querySelectorAll('.note-block');
-  noteEls.forEach(el => {
-    const spawnY = parseFloat(el.dataset.spawnY);
-    const elapsed2 = timestamp - parseFloat(el.dataset.spawnTime);
-    const y = spawnY + elapsed2 * NOTE_SPEED / 1000;
-    el.style.top = y + 'px';
+  // Move existing notes
+  const noteEls = document.querySelectorAll('.note-block');
+  noteEls.forEach(el => {
+    const spawnY = parseFloat(el.dataset.spawnY);
+    const elapsed2 = timestamp - parseFloat(el.dataset.spawnTime);
+    const y = spawnY + elapsed2 * NOTE_SPEED / 1000;
+    el.style.top = y + 'px';
 
-    const noteId = parseInt(el.dataset.noteId);
-    const sn = songNotes[noteId];
+    const noteId = parseInt(el.dataset.noteId);
+    const sn = songNotes[noteId];
 
-    // Miss detection: passed hit zone
-    if (!sn.hit && !sn.missed) {
-      if (y > highwayHeight - HIT_ZONE_BOTTOM + NOTE_HEIGHT) {
-        sn.missed = true;
-        misses++;
-        combo = 1;
-        updateComboDisplay();
-        el.style.opacity = '0.2';
-        showFeedback('MISS', '#ff4444');
-        setTimeout(() => el.remove(), 400);
-      }
-    }
+    // Miss detection: passed hit zone
+    if (!sn.hit && !sn.missed) {
+      if (y > highwayHeight - HIT_ZONE_BOTTOM + NOTE_HEIGHT) {
+        sn.missed = true;
+        misses++;
+        combo = 1;
+        updateComboDisplay();
+        el.style.opacity = '0.2';
+        showFeedback('MISS', '#ff4444');
+        setTimeout(() => el.remove(), 400);
+      }
+    }
 
-    // Remove far offscreen
-    if (y > highwayHeight + 50) el.remove();
-  });
+    // Remove far offscreen
+    if (y > highwayHeight + 50) el.remove();
+  });
 
-  // Progress bar
-  const totalDur = songNotes[songNotes.length-1].time + 500;
-  document.getElementById('song-progress-fill').style.width = Math.min(100, elapsed / totalDur * 100) + '%';
+  // Progress bar
+  const totalDur = songNotes[songNotes.length-1].time + 500;
+  document.getElementById('song-progress-fill').style.width = Math.min(100, elapsed / totalDur * 100) + '%';
 
-  // End check
-  if (elapsed > songNotes[songNotes.length-1].time + 2000 && currentNoteIndex >= songNotes.length) {
-    const remaining = document.querySelectorAll('.note-block').length;
-    if (remaining === 0) {
-      endGame();
-      return;
-    }
-  }
+  // End check
+  if (elapsed > songNotes[songNotes.length-1].time + 2000 && currentNoteIndex >= songNotes.length) {
+    const remaining = document.querySelectorAll('.note-block').length;
+    if (remaining === 0) {
+      endGame();
+      return;
+    }
+  }
 
-  requestAnimationFrame(gameFrame);
+  requestAnimationFrame(gameFrame);
 }
 
 function spawnNote(sn) {
-  const lane = document.getElementById(`lane-${sn.lane}`);
-  if (!lane) return;
-  const el = document.createElement('div');
-  el.className = 'note-block';
-  el.style.height = NOTE_HEIGHT + 'px';
-  el.style.top = '-50px';
-  el.style.background = LANE_COLORS[sn.lane] + '33';
-  el.style.borderColor = LANE_COLORS[sn.lane] + '99';
-  el.style.color = LANE_COLORS[sn.lane];
-  el.style.boxShadow = `0 0 10px ${LANE_COLORS[sn.lane]}44`;
-  el.textContent = sn.note;
-  el.dataset.noteId = sn.id;
-  el.dataset.lane = sn.lane;
-  el.dataset.spawnTime = performance.now();
-  el.dataset.spawnY = -50;
-  lane.appendChild(el);
+  const lane = document.getElementById(`lane-${sn.lane}`);
+  if (!lane) return;
+  const el = document.createElement('div');
+  el.className = 'note-block';
+  el.style.height = NOTE_HEIGHT + 'px';
+  el.style.top = '-50px';
+  el.style.background = LANE_COLORS[sn.lane] + '33';
+  el.style.borderColor = LANE_COLORS[sn.lane] + '99';
+  el.style.color = LANE_COLORS[sn.lane];
+  el.style.boxShadow = `0 0 10px ${LANE_COLORS[sn.lane]}44`;
+  el.textContent = sn.note;
+  el.dataset.noteId = sn.id;
+  el.dataset.lane = sn.lane;
+  el.dataset.spawnTime = performance.now();
+  el.dataset.spawnY = -50;
+  lane.appendChild(el);
 }
 
 function checkHit(noteName, freq) {
-  const lane = noteToLane(noteName);
-  if (lane < 0) return;
+  const lane = noteToLane(noteName);
+  if (lane < 0) return;
 
-  // Cooldown per lane to avoid rapid multi-hits
-  const now = performance.now();
-  if (hitCooldown[lane] && now - hitCooldown[lane] < 300) return;
+  // Cooldown per lane to avoid rapid multi-hits
+  const now = performance.now();
+  if (hitCooldown[lane] && now - hitCooldown[lane] < 300) return;
 
-  // Find a note in hit zone for this lane
-  const laneEl = document.getElementById(`lane-${lane}`);
-  if (!laneEl) return;
-  const noteEls = laneEl.querySelectorAll('.note-block');
-  const hitZoneY = highwayHeight - HIT_ZONE_BOTTOM;
+  // Find a note in hit zone for this lane
+  const laneEl = document.getElementById(`lane-${lane}`);
+  if (!laneEl) return;
+  const noteEls = laneEl.querySelectorAll('.note-block');
+  const hitZoneY = highwayHeight - HIT_ZONE_BOTTOM;
 
-  for (const el of noteEls) {
-    const topY = parseFloat(el.style.top);
-    const noteId = parseInt(el.dataset.noteId);
-    const sn = songNotes[noteId];
-    if (!sn || sn.hit || sn.missed) continue;
+  for (const el of noteEls) {
+    const topY = parseFloat(el.style.top);
+    const noteId = parseInt(el.dataset.noteId);
+    const sn = songNotes[noteId];
+    if (!sn || sn.hit || sn.missed) continue;
 
-    if (topY >= hitZoneY - HIT_WINDOW && topY <= hitZoneY + NOTE_HEIGHT) {
-      // Hit!
-      sn.hit = true;
-      hits++;
-      combo++;
-      if (combo > maxCombo) maxCombo = combo;
-      hitCooldown[lane] = now;
+    if (topY >= hitZoneY - HIT_WINDOW && topY <= hitZoneY + NOTE_HEIGHT) {
+      // Hit!
+      sn.hit = true;
+      hits++;
+      combo++;
+      if (combo > maxCombo) maxCombo = combo;
+      hitCooldown[lane] = now;
 
-      const points = 100 * Math.min(combo, 8);
-      score += points;
+      const points = 100 * Math.min(combo, 8);
+      score += points;
 
-      document.getElementById('score-display').textContent = score.toLocaleString();
-      updateComboDisplay();
+      document.getElementById('score-display').textContent = score.toLocaleString();
+      updateComboDisplay();
 
-      // Visual feedback
-      el.style.background = LANE_COLORS[lane] + '88';
-      el.style.boxShadow = `0 0 30px ${LANE_COLORS[lane]}`;
-      lightLane(lane);
-      showFeedback(combo > 5 ? 'PERFECT! 🔥' : 'NICE! ✓', LANE_COLORS[lane]);
-      setTimeout(() => el.remove(), 150);
-      break;
-    }
-  }
+      // Visual feedback
+      el.style.background = LANE_COLORS[lane] + '88';
+      el.style.boxShadow = `0 0 30px ${LANE_COLORS[lane]}`;
+      lightLane(lane);
+      showFeedback(combo > 5 ? 'PERFECT! 🔥' : 'NICE! ✓', LANE_COLORS[lane]);
+      setTimeout(() => el.remove(), 150);
+      break;
+    }
+  }
 }
 
 function lightLane(lane) {
-  const laneEl = document.getElementById(`lane-${lane}`);
-  laneEl.classList.add('active');
-  const btn = document.getElementById(`hit-btn-${lane}`);
-  btn.classList.add('lit');
-  setTimeout(() => {
-    laneEl.classList.remove('active');
-    btn.classList.remove('lit');
-  }, 200);
+  const laneEl = document.getElementById(`lane-${lane}`);
+  laneEl.classList.add('active');
+  const btn = document.getElementById(`hit-btn-${lane}`);
+  btn.classList.add('lit');
+  setTimeout(() => {
+    laneEl.classList.remove('active');
+    btn.classList.remove('lit');
+  }, 200);
 }
 
 function updateComboDisplay() {
-  const fire = combo >= 5 ? '🔥' : '';
-  document.getElementById('combo-display').innerHTML = `COMBO x${combo} ${fire}`;
+  const fire = combo >= 5 ? '🔥' : '';
+  document.getElementById('combo-display').innerHTML = `COMBO x${combo} ${fire}`;
 }
 
 function showFeedback(text, color) {
-  const el = document.createElement('div');
-  el.className = 'hit-feedback';
-  el.style.color = color;
-  el.textContent = text;
-  document.getElementById('game-wrapper').appendChild(el);
-  setTimeout(() => el.remove(), 600);
+  const el = document.createElement('div');
+  el.className = 'hit-feedback';
+  el.style.color = color;
+  el.textContent = text;
+  document.getElementById('game-wrapper').appendChild(el);
+  setTimeout(() => el.remove(), 600);
 }
 
 function showError(msg) {
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.style.zIndex = '200';
-  overlay.innerHTML = `
-    <h1 style="color: #ff6b35; font-size: 28px;">⚠️ Hata</h1>
-    <p style="max-width: 350px; margin: 16px 0;">${msg}</p>
-    <button class="btn-primary" onclick="this.parentElement.remove(); showSongSelect();">Geri Dön</button>
-  `;
-  document.getElementById('game-wrapper').appendChild(overlay);
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.style.zIndex = '200';
+  overlay.innerHTML = `
+    <h1 style="color: #ff6b35; font-size: 28px;">⚠️ Hata</h1>
+    <p style="max-width: 350px; margin: 16px 0;">${msg}</p>
+    <button class="btn-primary" onclick="this.parentElement.remove(); showSongSelect();">Geri Dön</button>
+  `;
+  document.getElementById('game-wrapper').appendChild(overlay);
 }
 
 function endGame() {
-  gameState = 'result';
-  const accuracy = totalNotes > 0 ? Math.round(hits / totalNotes * 100) : 0;
-  let grade, gradeEmoji;
-  if (accuracy >= 95) { grade = 'S'; gradeEmoji = '🌟'; }
-  else if (accuracy >= 85) { grade = 'A'; gradeEmoji = '⭐'; }
-  else if (accuracy >= 70) { grade = 'B'; gradeEmoji = '✨'; }
-  else if (accuracy >= 55) { grade = 'C'; gradeEmoji = '🎵'; }
-  else { grade = 'D'; gradeEmoji = '🎤'; }
+  gameState = 'result';
+  const accuracy = totalNotes > 0 ? Math.round(hits / totalNotes * 100) : 0;
+  let grade, gradeEmoji;
+  if (accuracy >= 95) { grade = 'S'; gradeEmoji = '🌟'; }
+  else if (accuracy >= 85) { grade = 'A'; gradeEmoji = '⭐'; }
+  else if (accuracy >= 70) { grade = 'B'; gradeEmoji = '✨'; }
+  else if (accuracy >= 55) { grade = 'C'; gradeEmoji = '🎵'; }
+  else { grade = 'D'; gradeEmoji = '🎤'; }
 
-  const stars = accuracy >= 95 
+  const stars = accuracy >= 95 ? '★★★' : accuracy >= 70 ? '★★☆' : '★☆☆';
+
+  document.getElementById('result-grade').textContent = gradeEmoji;
+  document.getElementById('result-title').textContent = grade + ' — ' + (accuracy >= 70 ? 'Harika!' : 'Devam et!');
+  document.getElementById('result-details').innerHTML =
+    `Skor: <strong style="color:#00ffb4">${score.toLocaleString()}</strong><br>
+     İsabet: <strong>${accuracy}%</strong> (${hits}/${totalNotes})<br>
+     Maks Kombo: <strong>x${maxCombo}</strong>`;
+  document.getElementById('result-stars').textContent = stars;
+  document.getElementById('result-overlay').style.display = 'flex';
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+buildHitButtons();
+lucide && lucide.createIcons && lucide.createIcons();
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" onload="lucide.createIcons()"></script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e25bc50f0daad37',t:'MTc3NDUyMzcwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
